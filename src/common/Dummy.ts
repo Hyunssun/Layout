@@ -1,48 +1,38 @@
 // 물체
 export const object = [
-  { x: 170, y: 130 },
-  { x: 170, y: 170 },
-  { x: 170, y: 210 },
-  { x: 170, y: 250 },
-  { x: 170, y: 290 },
-  { x: 170, y: 330 },
-  { x: 170, y: 370 },
-  { x: 210, y: 370 },
-  { x: 250, y: 370 },
-  { x: 290, y: 370 },
-  { x: 330, y: 370 },
-  { x: 370, y: 370 },
-  { x: 410, y: 370 },
-  { x: 410, y: 410 },
-  { x: 410, y: 450 },
-  { x: 410, y: 490 },
-  { x: 410, y: 530 },
-  { x: 410, y: 570 },
-  { x: 410, y: 610 },
-  { x: 410, y: 650 },
-];
+  { x: 170, y: 130, w: 35, h: 35, state: "run" },
+  { x: 170, y: 170, w: 35, h: 35, state: "run" },
+  { x: 170, y: 210, w: 35, h: 35, state: "run" },
+  { x: 170, y: 250, w: 35, h: 35, state: "run" },
 
-// 지우기
-const path_arr = () => {
-  const arr = [];
-  for (let i = 0; i < 7; i++) {
-    arr.push({ x: 152, y: 112 + i * 40, w: 35, h: 35 });
-  }
-  for (let i = 1; i < 7; i++) {
-    arr.push({ x: 152 + i * 40, y: arr[6].y, w: 35, h: 35 });
-  }
-  for (let i = 1; i < 9; i++) {
-    arr.push({
-      x: arr[12].x,
-      y: arr[12].y + i * 40,
-      w: 35,
-      h: 35,
-    });
-  }
-  console.log(arr);
-  return arr;
-};
-export const path = path_arr();
+  // 반복
+  { x: 170, y: 290, w: 35, h: 35, state: "stop" },
+  { x: 170, y: 290, w: 35, h: 35, state: "stop" },
+  { x: 170, y: 290, w: 35, h: 35, state: "stop" },
+  { x: 170, y: 290, w: 35, h: 35, state: "stop" },
+
+  { x: 170, y: 330, w: 35, h: 35, state: "run" },
+  { x: 170, y: 370, w: 35, h: 35, state: "run" },
+  { x: 210, y: 370, w: 35, h: 35, state: "run" },
+  { x: 250, y: 370, w: 35, h: 35, state: "run" },
+  { x: 290, y: 370, w: 35, h: 35, state: "run" },
+  { x: 330, y: 370, w: 35, h: 35, state: "run" },
+
+  // 반복
+  { x: 370, y: 370, w: 35, h: 35, state: "stop" },
+  { x: 370, y: 370, w: 35, h: 35, state: "stop" },
+  { x: 370, y: 370, w: 35, h: 35, state: "stop" },
+  { x: 370, y: 370, w: 35, h: 35, state: "stop" },
+
+  { x: 410, y: 370, w: 35, h: 35, state: "run" },
+  { x: 410, y: 410, w: 35, h: 35, state: "run" },
+  { x: 410, y: 450, w: 35, h: 35, state: "run" },
+  { x: 410, y: 490, w: 35, h: 35, state: "run" },
+  { x: 410, y: 530, w: 35, h: 35, state: "run" },
+  { x: 410, y: 570, w: 35, h: 35, state: "run" },
+  { x: 410, y: 610, w: 35, h: 35, state: "run" },
+  { x: 410, y: 650, w: 35, h: 35, state: "run" },
+];
 
 // 시작지점
 export const conveyor_start = { x: 120, y: 50, w: 100, h: 100, val: 1000 };
@@ -51,25 +41,23 @@ export const conveyor_start = { x: 120, y: 50, w: 100, h: 100, val: 1000 };
 export const conveyor_end = { x: 360, y: 630, w: 100, h: 100, val: 2000 };
 
 // 컨베어
-const conveyor_arr = () => {
-  const arr = [];
-  for (let i = 0; i < 6; i++) {
-    arr.push({ x: 150, y: 150 + i * 40, w: 40, h: 40, val: i });
-  }
-  for (let i = 1; i < 7; i++) {
-    arr.push({ x: 150 + i * 40, y: arr[5].y, w: 40, h: 40, val: i + 5 });
-  }
-  for (let i = 1; i < 7; i++) {
-    arr.push({
-      x: arr[11].x,
-      y: arr[11].y + i * 40,
-      w: 40,
-      h: 40,
-      val: i + 11,
-    });
-  }
-
-  console.log(arr);
-  return arr;
-};
-export const conveyor = conveyor_arr();
+export const conveyor = [
+  { x: 150, y: 150, w: 40, h: 40, val: 1, state: "open" },
+  { x: 150, y: 190, w: 40, h: 40, val: 2, state: "open" },
+  { x: 150, y: 230, w: 40, h: 40, val: 3, state: "open" },
+  { x: 150, y: 270, w: 40, h: 40, val: 4, state: "open" },
+  { x: 150, y: 310, w: 40, h: 40, val: 5, state: "open" },
+  { x: 150, y: 350, w: 40, h: 40, val: 6, state: "open" },
+  { x: 190, y: 350, w: 40, h: 40, val: 7, state: "open" },
+  { x: 230, y: 350, w: 40, h: 40, val: 8, state: "open" },
+  { x: 270, y: 350, w: 40, h: 40, val: 9, state: "open" },
+  { x: 310, y: 350, w: 40, h: 40, val: 10, state: "open" },
+  { x: 350, y: 350, w: 40, h: 40, val: 11, state: "open" },
+  { x: 390, y: 350, w: 40, h: 40, val: 12, state: "open" },
+  { x: 390, y: 390, w: 40, h: 40, val: 13, state: "open" },
+  { x: 390, y: 430, w: 40, h: 40, val: 14, state: "open" },
+  { x: 390, y: 470, w: 40, h: 40, val: 15, state: "open" },
+  { x: 390, y: 510, w: 40, h: 40, val: 16, state: "open" },
+  { x: 390, y: 550, w: 40, h: 40, val: 17, state: "open" },
+  { x: 390, y: 590, w: 40, h: 40, val: 18, state: "open" },
+];
