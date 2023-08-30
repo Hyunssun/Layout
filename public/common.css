@@ -36,6 +36,18 @@
 }
 
 /* 버튼 */
+.object_change {
+  cursor: pointer;
+  border: none;
+  padding: 15px 30px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  border-radius: 15px;
+  width: 100%;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
 .object_start {
   cursor: pointer;
   border: none;
@@ -47,7 +59,6 @@
   font-size: 18px;
   font-weight: bold;
 }
-
 .conveyor_state {
   display: flex;
   flex-direction: row;

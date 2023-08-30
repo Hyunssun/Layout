@@ -21,202 +21,177 @@ const HEIGHT = 850;
 
 export const Canvas = (): JSX.Element => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+
   const dispatch = useDispatch();
   const start: boolean = useSelector(
     (state: { start: boolean }) => state.start
   );
-  const [conveyor_arr, setConveyor_arr] = useState<any>(conveyor.concat());
+
+  const [conveyorArr, setConveyorArr] = useState<any>(conveyor.concat());
   const [value, setValue] = useState<valueType>({
     type: "",
     value: "",
     state: "",
   });
+  const [imageChange, setImageChange] = useState<boolean>(false);
 
   // start 버튼 클릭 시 redux 값 변경
   const onClickStart = () => {
     dispatch(setStart(!start));
   };
+  // change 버튼 클릭 시 image 변경
+  const onClickChange = () => {
+    setImageChange(!imageChange);
+  };
 
   // open 버튼 클릭 시 상태 open
   const onClickOpen = (val: any) => {
-    const arr = conveyor_arr.map((item: any) =>
+    const arr = conveyorArr.map((item: any) =>
       item.val === val ? { ...item, state: "open" } : item
     );
-    setConveyor_arr(arr);
+    setConveyorArr(arr);
     setValue({ ...value, state: "open" });
   };
+
   // close 버튼 클릭 시 상태 close
   const onClickClose = (val: any) => {
-    const arr = conveyor_arr.map((item: any) =>
+    const arr = conveyorArr.map((item: any) =>
       item.val === val ? { ...item, state: "close" } : item
     );
-    setConveyor_arr(arr);
+    setConveyorArr(arr);
     setValue({ ...value, state: "close" });
   };
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    // 클릭 이벤트
-    const handleCanvasClick = (event: MouseEvent) => {
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
-
-      // 컨베어 클릭
-      conveyor_arr.map((item: any) => {
-        if (
-          mouseX >= item.x &&
-          mouseX <= item.x + item.w &&
-          mouseY >= item.y &&
-          mouseY <= item.y + item.h
-        ) {
-          setValue({
-            ...value,
-            type: `Conveyor`,
-            value: item.val,
-            state: item.state,
-          });
-        }
-      });
-
-      // 시작지점 클릭
-      if (
-        mouseX >= conveyor_start.x &&
-        mouseX <= conveyor_start.x + conveyor_start.w &&
-        mouseY >= conveyor_start.y &&
-        mouseY <= conveyor_start.y + conveyor_start.h
-      ) {
-        setValue({
-          ...value,
-          type: `Conveyor Start`,
-          value: conveyor_start.val.toString(),
-        });
-      }
-
-      // 종료지점 클릭
-      if (
-        mouseX >= 360 &&
-        mouseX <= conveyor_end.x + conveyor_end.w &&
-        mouseY >= conveyor_end.y &&
-        mouseY <= conveyor_end.y + conveyor_end.h
-      ) {
-        setValue({
-          ...value,
-          type: `Conveyor End`,
-          value: conveyor_end.val.toString(),
-        });
-      }
-    };
-
-    // 컨베어
-    context.lineWidth = 2;
-    conveyor_arr.map((item: any) => {
-      if (item.state === "open") {
-        context.strokeStyle = "white";
-        context.strokeRect(item.x, item.y, item.w, item.h);
-      } else {
-        context.strokeStyle = "gray";
-        context.strokeRect(item.x, item.y, item.w, item.h);
-      }
-    });
-    // 시작지점
-    context.strokeStyle = "blue";
-    context.lineWidth = 2;
-    context.strokeRect(
-      conveyor_start.x,
-      conveyor_start.y,
-      conveyor_start.w,
-      conveyor_start.h
-    );
-    // 종료지점
-    context.strokeStyle = "red";
-    context.lineWidth = 2;
-    context.strokeRect(
-      conveyor_end.x,
-      conveyor_end.y,
-      conveyor_end.w,
-      conveyor_end.h
-    );
-
-    canvas.addEventListener("click", handleCanvasClick);
-    return () => {
-      canvas.removeEventListener("click", handleCanvasClick);
-    };
-  }, [conveyor_arr]);
+  const imageWidth = 50;
+  const imageHeight = 50;
+  let currentPosition = 0;
+  let percent = 0;
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const context = canvas.getContext("2d");
     if (!context) return;
+    const image = imageRef.current;
+    if (!image) return;
 
-    let i = 0;
-    setInterval(() => {
-      // 물체 클릭
-      canvas.addEventListener("click", (event) => {
-        const mouseX = event.clientX;
-        const mouseY = event.clientY;
-        if (
-          mouseX >= object[i - 1].x - 20 &&
-          mouseX <= object[i - 1].x + 20 &&
-          mouseY >= object[i - 1].y - 20 &&
-          mouseY <= object[i - 1].y + 20
-        ) {
-          setValue({
-            ...value,
-            type: `Object`,
-            value: `(${object[i - 1].x}, ${object[i - 1].y})`,
-            state: object[i - 1].state.toString(),
-          });
+    const animation = () => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 컨베어
+      context.lineWidth = 2;
+      conveyorArr.map((item: any) => {
+        if (item.state === "open") {
+          context.strokeStyle = "white";
+          context.strokeRect(item.x, item.y, item.w, item.h);
+        } else {
+          context.strokeStyle = "gray";
+          context.strokeRect(item.x, item.y, item.w, item.h);
         }
       });
+      // 시작지점
+      context.strokeStyle = "blue";
+      context.lineWidth = 2;
+      context.strokeRect(
+        conveyor_start.x,
+        conveyor_start.y,
+        conveyor_start.w,
+        conveyor_start.h
+      );
+      // 종료지점
+      context.strokeStyle = "red";
+      context.lineWidth = 2;
+      context.strokeRect(
+        conveyor_end.x,
+        conveyor_end.y,
+        conveyor_end.w,
+        conveyor_end.h
+      );
 
-      // 종료지점 지우기
-      if (i === object.length) {
-        context.clearRect(
-          object[i - 1].x - 18,
-          object[i - 1].y - 18,
-          object[i - 1].w,
-          object[i - 1].h
-        );
+      // 현재 경로 노드의 좌표를 가져옴
+      const currentobjectNode = object[currentPosition];
+      const nextobjectNode = object[(currentPosition + 1) % object.length];
+
+      // 다음 경로 노드와의 차이를 계산하여 움직이는 방향을 정함
+      const dx = nextobjectNode.x - currentobjectNode.x;
+      const dy = nextobjectNode.y - currentobjectNode.y;
+
+      // 좌표
+      let x = currentobjectNode.x + dx * percent;
+      let y = currentobjectNode.y + dy * percent;
+
+      context.drawImage(image, x, y, imageWidth, imageHeight);
+
+      context.closePath();
+
+      percent += 0.1;
+      if (percent > 1) {
+        percent = 0;
+        currentPosition = (currentPosition + 1) % object.length;
+      }
+
+      if (object.length - 1 === currentPosition) {
         return;
       }
-      // 지우기
-      if (i > 0) {
-        context.clearRect(
-          object[i - 1].x - 18,
-          object[i - 1].y - 18,
-          object[i - 1].w,
-          object[i - 1].h
-        );
-      }
 
-      // 물체
-      context.beginPath();
-      context.arc(object[i].x, object[i].y, 15, 0, 2 * Math.PI);
-      context.fillStyle = "green";
-      context.fill();
+      // 클릭 이벤트
+      const handleCanvasClick = (event: MouseEvent) => {
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
 
-      // 물체의 좌표가 같다면
-      if (i > 0) {
+        // 컨베어 클릭
+        conveyorArr.map((item: any) => {
+          if (
+            mouseX >= item.x &&
+            mouseX <= item.x + item.w &&
+            mouseY >= item.y &&
+            mouseY <= item.y + item.h
+          ) {
+            setValue({
+              ...value,
+              type: `Conveyor`,
+              value: item.val,
+              state: item.state,
+            });
+          }
+        });
+
+        // 시작지점 클릭
         if (
-          object[i].x === object[i - 1].x &&
-          object[i].y === object[i - 1].y
+          mouseX >= conveyor_start.x &&
+          mouseX <= conveyor_start.x + conveyor_start.w &&
+          mouseY >= conveyor_start.y &&
+          mouseY <= conveyor_start.y + conveyor_start.h
         ) {
-          context.beginPath();
-          context.arc(object[i].x, object[i].y, 15, 0, 2 * Math.PI);
-          context.fillStyle = "red";
-          context.fill();
+          setValue({
+            ...value,
+            type: `Conveyor Start`,
+            value: conveyor_start.val.toString(),
+          });
         }
-      }
-      i++;
-    }, 500);
-  }, [start]);
+
+        // 종료지점 클릭
+        if (
+          mouseX >= 360 &&
+          mouseX <= conveyor_end.x + conveyor_end.w &&
+          mouseY >= conveyor_end.y &&
+          mouseY <= conveyor_end.y + conveyor_end.h
+        ) {
+          setValue({
+            ...value,
+            type: `Conveyor End`,
+            value: conveyor_end.val.toString(),
+          });
+        }
+      };
+
+      canvas.addEventListener("click", handleCanvasClick);
+      requestAnimationFrame(animation);
+    };
+
+    animation();
+  }, [start, conveyorArr]);
 
   return (
     <div className="container">
@@ -226,6 +201,13 @@ export const Canvas = (): JSX.Element => {
         height={HEIGHT}
         className="container_left"
         style={{ backgroundColor: "black" }}
+      />
+
+      <img
+        ref={imageRef}
+        src={imageChange ? "image/lion1.png" : "image/lion2.png"}
+        alt="Image"
+        style={{ display: "none" }}
       />
       <div className="container_right">
         <div className="info">
@@ -256,7 +238,9 @@ export const Canvas = (): JSX.Element => {
             </button>
           </div>
         )}
-
+        <button className="object_change" onClick={onClickChange}>
+          Change
+        </button>
         <button className="object_start" onClick={onClickStart}>
           Start
         </button>
